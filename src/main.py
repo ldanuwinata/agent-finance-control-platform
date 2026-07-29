@@ -1,14 +1,37 @@
 import pandas as pd
 
-print ("Welcome to the Agentic Finance Control Platform!")
+from logger import get_logger
+from agents.supervisor_agent import SupervisorAgent
+from config import DATA_PATH, REPORT_PATH
 
-data = {
-    "Invoice": [1001, 1002, 1003],
-    "Fund": ["Fund A", "Fund B", "Fund C"],
-    "Amount": [25000, 18000, 42000],
-    
-}
+logger = get_logger(__name__)
 
-df = pd.DataFrame(data)
+def main():
+    logger.info("Starting Agentic Finance Control Platform")
 
-print(df)
+    # Load the transactions data
+    df = pd.read_csv('data/transactions.csv')
+    logger.info(f"Loaded {len(df)} transactions.csv.")
+
+    # Run the workflow
+    supervisor_agent = SupervisorAgent()
+    results = supervisor_agent.process(df)
+
+    logger.info("Workflow completed.")
+
+    # Print the generated report
+    print(results.report)
+
+    # Save the report
+    with open('data/report.txt', 'w') as f:
+        f.write(results.report)
+
+    logger.info("Report saved to data/report.txt.")
+
+    results = supervisor_agent.process(df)
+    print(type(results))
+
+if __name__ == "__main__":
+    main()
+
+

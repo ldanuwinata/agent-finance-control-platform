@@ -1,0 +1,17 @@
+
+===== REPORT =====
+
+Transactions checked : 6
+Exceptions found : 3
+
+Exception Details:
+
+- Invoice 1002 exceeds the expected amount byby EUR500.
+- Invoice 1004 is below the expected amountby EUR400.
+- Invoice 1006 exceeds the expected amount byby EUR500.
+
+Supporting Evidence:
+
+- Invoice 1002 : Supporting documents for invoice 1002.pdf
+- Invoice 1004 : Supporting documents for invoice 1004.pdf
+- Invoice 1006 : Supporting documents for invoice 1006.pdf
