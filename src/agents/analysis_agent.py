@@ -1,4 +1,9 @@
+from services.llm_service import LLMService
+
 class AnalysisAgent:
+
+    def __init__(self):
+        self.llm_service = LLMService()
 
     def analyse(self, exceptions):
         # Perform analysis on the exceptions
@@ -8,17 +13,19 @@ class AnalysisAgent:
 
             difference = row['Difference']
 
-            if difference > 0:
-                reason = (
-                    f"Invoice {row['Invoice']} exceeds the expected amount by"
-                    f"by EUR{difference}."
-                )
+            prompt = f"""
+            You are an expert financial analyst.
+            Analyze this invoice discrepancy.
+            Invoice: {row['Invoice']}
+            Expected Amount: {row['Expected Amount']}
+            Actual Amount: {row['Actual Amount']}
+            Difference: {difference}
 
-            else:
-                reason = (
-                    f"Invoice {row['Invoice']} is below the expected amount"
-                    f"by EUR{abs(difference)}."
-                )
+            Write ashort explanation in one sentence.
+            """
+
+            reason = self.llm_service.ask(prompt)
+            
 
             analyses.append(reason)
                 

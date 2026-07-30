@@ -11,6 +11,8 @@ def main():
 
     # Load the transactions data
     df = pd.read_csv('data/transactions.csv')
+    print(df.columns)
+    
     logger.info(f"Loaded {len(df)} transactions.csv.")
 
     # Run the workflow
