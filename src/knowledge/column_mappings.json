@@ -1,6 +1,22 @@
 {
-    "Invoice Number": {
-        "standard_name": "Invoice",
-        "source": "llm"
+    "Portfolio": {
+        "standard_name": "Fund",
+        "source": "manual"
+    },
+    "Security ID": {
+        "standard_name": "ISIN",
+        "source": "manual"
+    },
+    "Units": {
+        "standard_name": "NumberOfShares",
+        "source": "manual"
+    },
+    "Value": {
+        "standard_name": "MarketValue",
+        "source": "manual"
+    },
+    "CCY": {
+        "standard_name": "Currency",
+        "source": "manual"
     }
 }

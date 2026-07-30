@@ -19,8 +19,13 @@ def main():
 
     agent = SchemaMappingAgent()
 
-    agent.map_schema(df)
+    mapped_df = agent.map_schema(df)
 
+    print("\nColumns:")
+    print(mapped_df.columns.tolist())
+
+    print("\nDataFrame:")
+    print(mapped_df)
 
 if __name__ == "__main__":
     main()

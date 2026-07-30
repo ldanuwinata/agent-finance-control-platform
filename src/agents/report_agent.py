@@ -1,29 +1,111 @@
+from pathlib import Path
+
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+
+
 class ReportAgent:
-    def generate(self, results):
+    """
+    Generates an audit-style PDF report for portfolio exceptions.
+    """
 
-        report = []
+    def export_pdf(self, exceptions, analyses, output_file):
 
-        report.append("\n===== REPORT =====\n")
+        output_path = Path(output_file)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        report.append(
-            f"Transactions checked : {len(results['validated'])}"
+        document = SimpleDocTemplate(str(output_path))
+        styles = getSampleStyleSheet()
+
+        story = []
+
+        # -------------------------------------------------
+        # Title
+        # -------------------------------------------------
+
+        story.append(
+            Paragraph("<b>Agentic Finance Control Platform</b>", styles["Title"])
         )
 
-        report.append(
-            f"Exceptions found : {len(results['exceptions'])}\n"
+        story.append(
+            Paragraph("Portfolio Exception Report", styles["Heading2"])
         )
 
-        report.append("Exception Details:\n")
+        story.append(Spacer(1, 20))
 
-        for analysis in results["analysis"]:
-            report.append(f"- {analysis}")
+        # -------------------------------------------------
+        # Summary
+        # -------------------------------------------------
 
-        report.append("\nSupporting Evidence:\n")
+        story.append(Paragraph("<b>Summary</b>", styles["Heading2"]))
 
-        for evidence in results["evidence"]:
-            report.append(
-                f"- Invoice {evidence['Invoice']} : "
-                f"{evidence['Supporting Documents']}"
+        story.append(
+            Paragraph(
+                f"Exceptions detected: {len(exceptions)}",
+                styles["Normal"]
+            )
+        )
+
+        story.append(Spacer(1, 20))
+
+        # -------------------------------------------------
+        # Exception Details
+        # -------------------------------------------------
+
+        for i, (_, row) in enumerate(exceptions.iterrows(), start=1):
+
+            story.append(
+                Paragraph(
+                    f"<b>Exception #{i}</b>",
+                    styles["Heading2"]
+                )
             )
 
-        return "\n".join(report)
+            story.append(
+                Paragraph(f"<b>Fund:</b> {row['Fund']}", styles["Normal"])
+            )
+
+            story.append(
+                Paragraph(f"<b>ISIN:</b> {row['ISIN']}", styles["Normal"])
+            )
+
+            story.append(
+                Paragraph(
+                    f"<b>Number of Shares:</b> {row['NumberOfShares']}",
+                    styles["Normal"]
+                )
+            )
+
+            story.append(
+                Paragraph(
+                    f"<b>Market Value:</b> {row['MarketValue']}",
+                    styles["Normal"]
+                )
+            )
+
+            story.append(
+                Paragraph(
+                    f"<b>Currency:</b> {row['Currency']}",
+                    styles["Normal"]
+                )
+            )
+
+            story.append(
+                Paragraph(
+                    f"<b>Exception:</b> {row['ExceptionType']}",
+                    styles["Normal"]
+                )
+            )
+
+            story.append(
+                Paragraph(
+                    f"<b>AI Assessment:</b> {analyses[i-1]['Analysis']}",
+                    styles["Normal"]
+                )
+            )
+
+            story.append(Spacer(1, 20))
+
+        document.build(story)
+
+        print(f"✅ PDF report created: {output_path}")

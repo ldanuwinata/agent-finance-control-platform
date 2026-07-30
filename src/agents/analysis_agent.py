@@ -1,32 +1,35 @@
-from services.llm_service import LLMService
+from src.services.llm_service import LLMService
+from src.services.prompt_service import PromptService
+
 
 class AnalysisAgent:
 
     def __init__(self):
-        self.llm_service = LLMService()
+        self.llm = LLMService()
+        self.prompts = PromptService()
 
-    def analyse(self, exceptions):
-        # Perform analysis on the exceptions
+    def analyse(self, dataframe):
+
         analyses = []
-        
-        for _, row in exceptions.iterrows():
 
-            difference = row['Difference']
+        for _, row in dataframe.iterrows():
 
-            prompt = f"""
-            You are an expert financial analyst.
-            Analyze this invoice discrepancy.
-            Invoice: {row['Invoice']}
-            Expected Amount: {row['Expected Amount']}
-            Actual Amount: {row['Actual Amount']}
-            Difference: {difference}
+            prompt = self.prompts.load_prompt(
+                "analysis.md",
+                Fund=row["Fund"],
+                ISIN=row["ISIN"],
+                NumberOfShares=row["NumberOfShares"],
+                MarketValue=row["MarketValue"],
+                Currency=row["Currency"],
+                ExceptionType=row["ExceptionType"],
+            )
 
-            Write ashort explanation in one sentence.
-            """
+            response = self.llm.ask(prompt)
 
-            reason = self.llm_service.ask(prompt)
-            
+            analyses.append({
+                "Fund": row["Fund"],
+                "ExceptionType": row["ExceptionType"],
+                "Analysis": response
+            })
 
-            analyses.append(reason)
-                
         return analyses

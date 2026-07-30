@@ -2,24 +2,33 @@ import pandas as pd
 
 class ValidationAgent:
 
+    REQUIRED_COLUMNS = [
+        "Fund",
+        "ISIN",
+        "NumberOfShares",
+        "MarketValue",
+        "Currency"
+    ]
+
+    NUMERIC_COLUMNS = [
+        "NumberOfShares",
+        "MarketValue"
+    ]
+
     def validate(self, dataframe):
+        errors = []
 
-        """
-        Compare Amound and ExpectedAmount and calculate the variance.
-        """
+        # Check required columns
+        for column in self.REQUIRED_COLUMNS:
+            if column not in dataframe.columns:
+                errors.append(f"Missing required column: {column}")
 
-        dataframe['Difference'] = dataframe['Amount'] - dataframe['ExpectedAmount']
+        if errors:
+            return False, errors
 
-        dataframe['Status'] = dataframe['Difference'].apply(lambda x: 'OK' if x == 0 else 'Mismatch')
+        # Check numeric columns
+        for column in self.NUMERIC_COLUMNS:
+            if not pd.api.types.is_numeric_dtype(dataframe[column]):
+                errors.append(f"{column} must be numeric.")
 
-        return dataframe
-
-    def get_exceptions(self, dataframe):
-
-        """
-        Get the rows where the Amount and ExpectedAmount do not match.
-        """
-
-        exceptions = dataframe[dataframe['Status'] == 'Mismatch']
-
-        return exceptions
+        return len(errors) == 0, errors
